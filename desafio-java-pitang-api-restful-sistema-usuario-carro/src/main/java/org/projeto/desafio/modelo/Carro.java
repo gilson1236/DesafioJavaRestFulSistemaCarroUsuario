@@ -2,22 +2,37 @@ package org.projeto.desafio.modelo;
 
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
 import javax.persistence.Id;
-
-import org.hibernate.annotations.GenericGenerator;
+import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.Size;
 
 @Entity
 public class Carro {
 
 	@Id
-	@GeneratedValue(generator = "increment")
-	@GenericGenerator(name = "increment", strategy = "increment")
+	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Long id;
 	private int year;
+	
+	@NotBlank
+	@Size(max = 20)
 	private String licensePlate;
+	
+	@NotBlank
+	@Size(max = 20)
 	private String model;
+	
+	@NotBlank
+	@Size(max = 10)
 	private String color;
 	
+	public Long getId() {
+		return id;
+	}
+	public void setId(Long id) {
+		this.id = id;
+	}
 	public int getYear() {
 		return year;
 	}

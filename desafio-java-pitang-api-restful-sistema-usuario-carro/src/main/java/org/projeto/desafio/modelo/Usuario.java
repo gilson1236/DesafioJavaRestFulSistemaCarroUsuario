@@ -1,28 +1,60 @@
 package org.projeto.desafio.modelo;
 
+import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.List;
 
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
 import javax.persistence.Id;
-
-import org.hibernate.annotations.GenericGenerator;
+import javax.persistence.OneToMany;
+import javax.validation.constraints.Email;
+import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.Size;
 
 @Entity
 public class Usuario {
+	
 	@Id
-	@GeneratedValue(generator = "increment")
-	@GenericGenerator(name = "increment", strategy = "increment")
+	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Long id;
+	
+	@NotBlank
+	@Size(max = 20)
 	private String firstName;
+	
+	@NotBlank
+	@Size(max = 20)
 	private String lastName;
+	
+	@NotBlank
+	@Email
+	@Size(max = 255)
 	private String email;
+	
 	private Calendar dataNascimento;
+	
+	@NotBlank
+	@Size(max = 60)
 	private String login;
+	
+	@NotBlank
 	private String password;
+	
+	@NotBlank
+	@Size(max = 20)
 	private String phone;
-	private List<Carro> cars;
+	
+	@OneToMany(mappedBy = "carrosUsuario")
+	private List<Carro> cars = new ArrayList<>();
+	
+	public Long getId() {
+		return id;
+	}
+	public void setId(Long id) {
+		this.id = id;
+	}
 	public String getFirstName() {
 		return firstName;
 	}

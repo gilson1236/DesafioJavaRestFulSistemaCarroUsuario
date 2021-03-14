@@ -1,10 +1,13 @@
 package org.projeto.desafio.controller;
 
 import java.util.List;
+import java.util.Optional;
 
+import javax.validation.Valid;
 import org.projeto.desafio.modelo.Usuario;
 import org.projeto.desafio.repository.Usuarios;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -13,6 +16,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
@@ -22,41 +26,49 @@ public class UsuarioController {
 		@Autowired
 		private Usuarios usuarios;
 		
-		@PostMapping(value = "/users")
-		public Usuario cadastrar(@RequestBody Usuario usuario) {
+		@PostMapping("/users")
+		@ResponseStatus(HttpStatus.CREATED)
+		public Usuario cadastrar(@Valid @RequestBody Usuario usuario) {
 			return this.usuarios.save(usuario);
 		}
 			
-		@GetMapping
+		@GetMapping("/users")
 		public List<Usuario> listarTodosOsUsuarios() {
 			return usuarios.findAll();
 		}
 		
-		@GetMapping(value = "/users/{id}")
-		public ResponseEntity<Usuario> encontrarUsuario(@PathVariable long id) {
-			return usuarios.findById(id).map(record->ResponseEntity.ok().body(record)).orElse(ResponseEntity.notFound().build());
+		@GetMapping("/users/{id}")
+		public ResponseEntity<Usuario> encontrarUsuario(@PathVariable Long id) {
+			Optional<Usuario> usuario = usuarios.findById(id);
+			
+			if(usuario.isPresent()) {
+				return ResponseEntity.ok(usuario.get());
+			}
+			
+			return ResponseEntity.notFound().build();
 		}
 		
-		@PutMapping(value = "/users/{id}")
-		public ResponseEntity <?> atualizar(@PathVariable("id") long id, @RequestBody Usuario usuario) {
-			return usuarios.findById(id).map(record -> {record.setFirstName(usuario.getFirstName());
-				record.setLastName(usuario.getLastName());
-				record.setLogin(usuario.getLogin());
-				record.setPassword(usuario.getPassword());
-				record.setDataNascimento(usuario.getDataNascimento());
-				record.setEmail(usuario.getEmail());
-				record.setPhone(usuario.getPhone());
-				record.setCars(usuario.getCars());
-				Usuario atualizado = usuarios.save(record);
-				return ResponseEntity.ok().body(atualizado);
-				}).orElse(ResponseEntity.notFound().build());
+		@PutMapping("/users/{id}")
+		public ResponseEntity <Usuario> atualizar(@Valid @PathVariable Long id, @RequestBody Usuario usuario) {
+			
+			if(!usuarios.existsById(id)) {
+				return ResponseEntity.notFound().build();
+			}
+			
+			usuario.setId(id);
+			usuario = usuarios.save(usuario);
+			
+			return ResponseEntity.ok(usuario);
+			
 		}
 		
-		@DeleteMapping(value="/users/{id}")
-		public ResponseEntity <?> remover(@PathVariable long id){
-			return usuarios.findById(id).map(record -> {usuarios.deleteById(id);
-					return ResponseEntity.ok().build();
-					}).orElse(ResponseEntity.notFound().build());
+		@DeleteMapping("/users/{id}")
+		public ResponseEntity <Void> remover(@PathVariable Long id){
+			if(!usuarios.existsById(id)) {
+				return ResponseEntity.notFound().build();
+			}
+			
+			return ResponseEntity.noContent().build();
 		}
 	
 }
