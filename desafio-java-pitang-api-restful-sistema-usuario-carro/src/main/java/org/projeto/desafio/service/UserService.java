@@ -7,6 +7,7 @@ import org.projeto.desafio.mapper.CarMapper;
 import org.projeto.desafio.mapper.UserMapper;
 import org.projeto.desafio.model.User;
 import org.projeto.desafio.repository.UserRepository;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -39,6 +40,10 @@ public class UserService {
     public UserDTO readById(Long id){
         return userRepository.findById(id).map(userMapper::toDTO)
                 .orElseThrow(() -> new RecordNotFoundException("User not found"));
+    }
+
+    public UserDetails readByLogin(String login){
+        return userRepository.findByLogin(login);
     }
 
     public UserDTO update(Long id, UserDTO user){
