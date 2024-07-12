@@ -3,10 +3,11 @@ package org.projeto.desafio.model;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Size;
+import org.springframework.hateoas.RepresentationModel;
 
 @Entity
 @Table(name = "car")
-public class Car {
+public class Car extends RepresentationModel<Car> {
 
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
